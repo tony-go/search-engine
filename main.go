@@ -200,16 +200,21 @@ func main() {
 	ch := make(chan *User)
 
 	// add workers
+	log.Printf("We looking for %s ...", userInput)
 	go NewWorker(UserDataBase[:15], ch).Find(userInput, "Worker #1")
 	go NewWorker(UserDataBase[15:], ch).Find(userInput, "Worker #2")
-	log.Printf("We looking for %s ...", userInput)
 
-	select {
-		case user := <- ch:
-	 		log.Printf("User find is %s", user.firstName)
-	 	case <- time.After(1 * time.Second):
-	 		log.Printf("User is not found")
+	for {
+
+		select {
+			case user := <- ch:
+				log.Printf("User find is %s", user.firstName)
+			case <- time.After(1 * time.Second):
+				return
+		}
+
 	}
+
 
 
 
